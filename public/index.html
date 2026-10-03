@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Ultimate Math — Arena das 4 Operações</title>
+  <meta name="theme-color" content="#4b2bd9">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>➗</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">{ "imports": { "three": "/vendor/three.module.min.js" } }</script>
+</head>
+<body>
+  <canvas id="world"></canvas>
+
+  <div id="loading" class="screen show"><div class="logo"><span class="l1">ULTIMATE</span><span class="l2">MATH</span></div><div class="spinner"></div></div>
+
+  <!-- TELA INICIAL -->
+  <section id="home" class="screen">
+    <div class="logo big"><div class="ops"><b class="c0">+</b><b class="c1">−</b><b class="c2">×</b><b class="c3">÷</b></div><span class="l1">ULTIMATE</span><span class="l2">MATH</span><small>Arena das 4 Operações</small></div>
+    <div class="card join-card">
+      <input id="pinInput" inputmode="numeric" maxlength="6" placeholder="PIN do jogo" autocomplete="off">
+      <button id="btnJoin" class="btn big yellow">JOGAR ▶</button>
+      <div class="row"><button id="btnSolo" class="btn ghost">🎯 Treino solo</button><button id="btnTeacher" class="btn ghost">🍎 Sou professor</button></div>
+    </div>
+    <p class="credit">Feito para o 6º ano do prof. Marcos ✨</p>
+  </section>
+
+  <!-- CUSTOMIZAÇÃO -->
+  <section id="custom" class="screen">
+    <div class="card custom-card">
+      <h2>Crie seu personagem</h2>
+      <input id="nameInput" maxlength="16" placeholder="Seu apelido" autocomplete="off">
+      <div class="tabs" id="tabs"></div>
+      <div class="options" id="options"></div>
+      <div class="row"><button id="btnRandom" class="btn ghost">🎲 Aleatório</button><button id="btnReady" class="btn yellow">PRONTO! ✔</button></div>
+    </div>
+    <button class="back" data-go="home">←</button>
+  </section>
+
+  <!-- LOGIN PROFESSOR -->
+  <section id="tlogin" class="screen">
+    <form class="card" id="loginForm">
+      <h2>🍎 Modo Professor</h2>
+      <input id="tUser" placeholder="Usuário" autocomplete="username">
+      <input id="tPass" type="password" placeholder="Senha" autocomplete="current-password">
+      <button class="btn yellow big">ENTRAR</button>
+      <p class="err" id="loginErr"></p>
+    </form>
+    <button class="back" data-go="home">←</button>
+  </section>
+
+  <!-- CONFIGURAÇÃO DA PARTIDA -->
+  <section id="tsetup" class="screen">
+    <div class="card setup-card">
+      <h2>Configurar partida</h2>
+      <label>Operações</label>
+      <div class="chips" id="opsChips">
+        <button class="chip on c0" data-op="add">+ Adição</button><button class="chip on c1" data-op="sub">− Subtração</button>
+        <button class="chip on c2" data-op="mul">× Multiplicação</button><button class="chip on c3" data-op="div">÷ Divisão</button>
+      </div>
+      <label>Dificuldade</label>
+      <div class="chips" id="diffChips">
+        <button class="chip" data-d="1">🌱 Fácil</button><button class="chip" data-d="2">⚡ Médio</button><button class="chip" data-d="3">🔥 Difícil</button><button class="chip on" data-d="mix">🎲 Misto</button>
+      </div>
+      <label>Questões: <b id="countVal">10</b></label><input type="range" id="count" min="3" max="40" value="10">
+      <label>Tempo por questão: <b id="timeVal">25</b>s</label><input type="range" id="time" min="10" max="90" step="5" value="25">
+      <label class="check"><input type="checkbox" id="auto"> Avançar automaticamente após cada resposta</label>
+      <button id="btnCreate" class="btn yellow big">CRIAR SALA 🚀</button>
+    </div>
+    <button class="back" data-go="home">←</button>
+  </section>
+
+  <!-- LOBBY -->
+  <section id="lobby" class="screen hud">
+    <div class="top-banner" id="lobbyHost">
+      <div class="pin-box">Entre em <b id="siteUrl"></b> com o PIN<div class="pin" id="pinShow">000000</div></div>
+      <div class="lobby-side"><div class="count"><b id="pCount">0</b> jogadores</div><button id="btnStart" class="btn yellow big">COMEÇAR ▶</button></div>
+    </div>
+    <div class="top-banner small" id="lobbyPlayer"><b>Você está dentro! 🎉</b> Aguardando o professor começar…<span class="hint">Toque no chão para andar • use os emotes!</span></div>
+    <div class="plist" id="plist"></div>
+  </section>
+
+  <!-- JOGO -->
+  <section id="game" class="screen hud">
+    <div class="topbar">
+      <div class="pill" id="qNum">1/10</div>
+      <div class="timer"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="19"/><circle id="timerArc" cx="22" cy="22" r="19"/></svg><span id="timerTxt">20</span></div>
+      <div class="pill score" id="scorePill">⭐ 0</div>
+    </div>
+    <div class="qcard" id="qcard"><div class="qtag" id="qTag"></div><div class="qtext" id="qText"></div></div>
+    <div class="ready" id="ready"><span id="readyTxt">Prepare-se!</span></div>
+    <div class="answers" id="answers"></div>
+    <div class="waitmsg" id="waitMsg">Resposta enviada! 🤞<small>Aguardando os colegas…</small></div>
+    <div class="host-bar" id="hostBar"><span id="ansCount">0/0 responderam</span><button class="btn small" id="btnSkip">Encerrar tempo ⏭</button></div>
+  </section>
+
+  <!-- RESULTADO DA QUESTÃO -->
+  <section id="reveal" class="screen hud">
+    <div class="banner" id="rBanner"></div>
+    <div class="card expl"><div class="expl-title">💡 Como resolver</div><div id="rAnswer" class="ranswer"></div><div id="rExpl"></div></div>
+    <div class="bars" id="rBars"></div>
+    <div class="mini-rank" id="rRank"></div>
+    <button id="btnNext" class="btn yellow big">PRÓXIMA ▶</button>
+  </section>
+
+  <!-- FIM -->
+  <section id="end" class="screen hud">
+    <h1 class="end-title">🏆 PÓDIO 🏆</h1>
+    <div class="card rank-card"><div id="endRank"></div><div class="my-pos" id="myPos"></div></div>
+    <div class="card report" id="report"></div>
+    <div class="row end-btns"><button id="btnAgain" class="btn yellow">🔁 Jogar de novo</button><button id="btnCsv" class="btn ghost">📥 Baixar relatório</button><button class="btn ghost" data-go="home">🏠 Início</button></div>
+  </section>
+
+  <div id="emoteBar" class="emote-bar"></div>
+  <button id="btnMute" class="icon-btn" title="Som">🔊</button>
+  <div id="toast"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

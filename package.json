@@ -1,0 +1,19 @@
+{
+  "name": "ultimatemath",
+  "version": "1.0.0",
+  "description": "Ultimate Math — Arena 3D multiplayer das 4 operações (6º ano)",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/questions.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "three": "^0.170.0"
+  }
+}
